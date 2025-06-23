@@ -1,0 +1,25 @@
+name: Docker Build and Push
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Build Docker image
+      run: docker build -t netvision .
+    
+    - name: Test Docker image
+      run: |
+        docker run -d -p 9898:5000 --name test-netvision netvision
+        sleep 10
+        curl -f http://localhost:9898 || exit 1
+        docker stop test-netvision
+        docker rm test-netvision

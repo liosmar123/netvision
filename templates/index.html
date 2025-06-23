@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_name }} - Network Port Scanner</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36' fill='none'%3E%3Cpath d='M18 2L30 9v18L18 34L6 27V9l12-7z' stroke='%233b82f6' stroke-width='1.8' fill='none' opacity='0.8'/%3E%3Cpath d='M18 6L26 11v14l-8 5-8-5V11l8-5z' stroke='%233b82f6' stroke-width='1.2' fill='none' opacity='0.6'/%3E%3Ccircle cx='18' cy='18' r='4' fill='%233b82f6' opacity='0.9'/%3E%3Ccircle cx='18' cy='18' r='2' fill='white' opacity='0.95'/%3E%3Cline x1='18' y1='6' x2='18' y2='14' stroke='%233b82f6' stroke-width='1.5' opacity='0.7'/%3E%3Cline x1='18' y1='22' x2='18' y2='30' stroke='%233b82f6' stroke-width='1.5' opacity='0.7'/%3E%3Ccircle cx='18' cy='6' r='1.5' fill='%233b82f6' opacity='0.8'/%3E%3Ccircle cx='18' cy='30' r='1.5' fill='%233b82f6' opacity='0.8'/%3E%3C/svg%3E">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .elegant-bg {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+        .dark .elegant-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+        .scanning-pulse {
+            animation: scanPulse 2s ease-in-out infinite;
+        }
+        @keyframes scanPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+        .logo-scan {
+            animation: logoScan 3s ease-in-out infinite;
+        }
+        @keyframes logoScan {
+            0%, 100% { transform: rotate(0deg); opacity: 1; }
+            25% { transform: rotate(90deg); opacity: 0.8; }
+            50% { transform: rotate(180deg); opacity: 0.9; }
+            75% { transform: rotate(270deg); opacity: 0.8; }
+        }
+    </style>
+</head>
+<body class="elegant-bg text-slate-900 dark:text-slate-100 min-h-screen">
+    <!-- Theme Toggle -->
+    <div class="fixed top-6 right-6 z-50">
+        <button id="themeToggle" class="w-12 h-12 bg-white/95 dark:bg-slate-700/95 backdrop-blur-sm hover:bg-white dark:hover:bg-slate-700 rounded-full flex items-center justify-center transition-all duration-200 shadow-lg border border-slate-300/50 dark:border-slate-500/50">
+            <i id="themeIcon" class="fas fa-moon text-slate-700 dark:text-slate-300"></i>
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 py-12">
+        <!-- Error Alert -->
+        {% if error %}
+        <div class="mb-8 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-triangle text-red-500 mr-3"></i>
+                <span class="text-red-700 dark:text-red-300">{{ error }}</span>
+                <button onclick="this.parentElement.parentElement.remove()" class="ml-auto text-red-500 hover:text-red-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Scanner Card -->
+        <div class="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-200/50 dark:border-slate-700/50 p-4 sm:p-8">
+            <div class="text-center mb-8">
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-2 flex items-center justify-center">
+                    <a href="/" class="flex items-center hover:opacity-75 transition-opacity duration-200 cursor-pointer">
+                        <div class="w-10 h-10 mr-3 flex items-center justify-center">
+                            <svg class="w-9 h-9 text-primary-500" viewBox="0 0 36 36" fill="none">
+                                <!-- Modern hexagonal frame -->
+                                <path d="M18 2L30 9v18L18 34L6 27V9l12-7z" stroke="currentColor" stroke-width="1.8" fill="none" opacity="0.8"/>
+                                <path d="M18 6L26 11v14l-8 5-8-5V11l8-5z" stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.6"/>
+                                
+                                <!-- Central network node -->
+                                <circle cx="18" cy="18" r="4" fill="currentColor" opacity="0.9"/>
+                                <circle cx="18" cy="18" r="2" fill="white" opacity="0.95"/>
+                                
+                                <!-- Network connection lines -->
+                                <line x1="18" y1="6" x2="18" y2="14" stroke="currentColor" stroke-width="1.5" opacity="0.7"/>
+                                <line x1="18" y1="22" x2="18" y2="30" stroke="currentColor" stroke-width="1.5" opacity="0.7"/>
+                                <line x1="10" y1="13" x2="14" y2="16" stroke="currentColor" stroke-width="1.5" opacity="0.7"/>
+                                <line x1="22" y1="20" x2="26" y2="23" stroke="currentColor" stroke-width="1.5" opacity="0.7"/>
+                                <line x1="26" y1="13" x2="22" y2="16" stroke="currentColor" stroke-width="1.5" opacity="0.7"/>
+                                <line x1="14" y1="20" x2="10" y2="23" stroke="currentColor" stroke-width="1.5" opacity="0.7"/>
+                                
+                                <!-- Network endpoints -->
+                                <circle cx="18" cy="6" r="1.5" fill="currentColor" opacity="0.8"/>
+                                <circle cx="18" cy="30" r="1.5" fill="currentColor" opacity="0.8"/>
+                                <circle cx="10" cy="13" r="1.5" fill="currentColor" opacity="0.8"/>
+                                <circle cx="26" cy="23" r="1.5" fill="currentColor" opacity="0.8"/>
+                                <circle cx="26" cy="13" r="1.5" fill="currentColor" opacity="0.8"/>
+                                <circle cx="10" cy="23" r="1.5" fill="currentColor" opacity="0.8"/>
+                            </svg>
+                        </div>
+                        {{ app_name }}
+                    </a>
+                </h1>
+                <p class="text-slate-600 dark:text-slate-400">Fast and reliable network port scanning tool</p>
+            </div>
+
+            <!-- Scan Form -->
+            <form method="POST" action="/scan" id="scanForm" class="space-y-6">
+                <!-- Target Input -->
+                <div>
+                    <label for="target" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        <i class="fas fa-crosshairs text-primary-500 mr-2"></i>Target IP Address
+                    </label>
+                    <div class="space-y-3">
+                        <input type="text" id="target" name="target" 
+                               value="{{ target_ip or '' }}" 
+                               class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                               placeholder="192.168.1.1" required>
+                        
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <button type="button" id="pasteIP" 
+                                    class="flex-1 px-3 sm:px-4 py-2.5 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg font-medium text-sm sm:text-base">
+                                <i class="fas fa-paste mr-1 sm:mr-2"></i>Paste
+                            </button>
+                            <button type="button" id="refreshPublicIP" 
+                                    class="flex-1 px-3 sm:px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all shadow-md hover:shadow-lg font-medium text-sm sm:text-base">
+                                <i class="fas fa-globe mr-1 sm:mr-2"></i>Public IP
+                            </button>
+                            <button type="button" id="useLocalIP" 
+                                    class="flex-1 px-3 sm:px-4 py-2.5 bg-gradient-to-r from-slate-500 to-slate-600 text-white rounded-lg hover:from-slate-600 hover:to-slate-700 transition-all shadow-md hover:shadow-lg font-medium text-sm sm:text-base">
+                                <i class="fas fa-home mr-1 sm:mr-2"></i>Local IP
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Port or Port Range -->
+                <div>
+                    <label for="port_range" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        <i class="fas fa-plug text-primary-500 mr-2"></i>Port or Port Range
+                    </label>
+                    <input type="text" id="port_range" name="port_range" 
+                           value=""
+                           class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                           placeholder="80 or 80,443,22 or 1-1000" required>
+                </div>
+
+                <!-- Advanced Options -->
+                <div class="border-t border-slate-200 dark:border-slate-700 pt-6">
+                    <button type="button" onclick="toggleAdvancedOptions()" class="flex items-center text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+                        <i id="advancedChevron" class="fas fa-chevron-right mr-2 transition-transform"></i>
+                        Advanced Options
+                    </button>
+                    <div id="advancedOptions" class="hidden mt-4 space-y-4">
+                        <div>
+                            <label for="timeout" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                Timeout (seconds)
+                            </label>
+                            <input type="number" id="timeout" name="timeout" value="1" min="1" max="10"
+                                   class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                Default Port Sets
+                            </label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <button type="button" onclick="setQuickPort('80,443,22,21,25,53,110,143,993,995,3389')" 
+                                        class="px-3 py-2 text-sm bg-slate-100 dark:bg-slate-600 hover:bg-slate-200 dark:hover:bg-slate-500 rounded-lg transition-colors">
+                                    Common Ports
+                                </button>
+                                <button type="button" onclick="setQuickPort('80,443')" 
+                                        class="px-3 py-2 text-sm bg-slate-100 dark:bg-slate-600 hover:bg-slate-200 dark:hover:bg-slate-500 rounded-lg transition-colors">
+                                    Web (80,443)
+                                </button>
+                                <button type="button" onclick="setQuickPort('21,22,23')" 
+                                        class="px-3 py-2 text-sm bg-slate-100 dark:bg-slate-600 hover:bg-slate-200 dark:hover:bg-slate-500 rounded-lg transition-colors">
+                                    Remote (21,22,23)
+                                </button>
+                                <button type="button" onclick="setQuickPort('1-1000')" 
+                                        class="px-3 py-2 text-sm bg-slate-100 dark:bg-slate-600 hover:bg-slate-200 dark:hover:bg-slate-500 rounded-lg transition-colors">
+                                    Range (1-1000)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-white font-medium py-4 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                    <i class="fas fa-search mr-2"></i>
+                    Start Port Scan
+                </button>
+            </form>
+        </div>
+
+        <!-- Scan Results -->
+        {% if show_results %}
+        <div class="mt-8 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-200/50 dark:border-slate-700/50 p-4 sm:p-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 space-y-2 sm:space-y-0">
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+                    <i class="fas fa-chart-bar text-primary-500 mr-2 sm:mr-3"></i>
+                    Scan Results
+                </h2>
+                <div class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                    {{ scan_info.total_open_ports }} open / {{ scan_info.total_ports_scanned }} scanned
+                    ({{ scan_info.scan_time }})
+                </div>
+            </div>
+
+            {% if scan_results %}
+            <!-- Mobile-friendly results for small screens -->
+            <div class="sm:hidden space-y-3">
+                {% for result in scan_results %}
+                <div class="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-4 border border-slate-200 dark:border-slate-600">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-mono text-lg font-semibold text-slate-900 dark:text-white">Port {{ result.port }}</span>
+                        {% if result.status == 'OPEN' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
+                                <i class="fas fa-circle text-green-500 mr-1 text-xs"></i>
+                                OPEN
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300">
+                                <i class="fas fa-circle text-red-500 mr-1 text-xs"></i>
+                                {{ result.status }}
+                            </span>
+                        {% endif %}
+                    </div>
+                    <div class="text-sm text-slate-600 dark:text-slate-400">
+                        <div class="flex justify-between">
+                            <span>Service:</span>
+                            <span class="text-slate-700 dark:text-slate-300">{{ result.service }}</span>
+                        </div>
+                        <div class="flex justify-between mt-1">
+                            <span>Protocol:</span>
+                            <span class="text-slate-700 dark:text-slate-300">{{ result.protocol }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Desktop table for larger screens -->
+            <div class="hidden sm:block overflow-x-auto">
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-200 dark:border-slate-700">
+                            <th class="text-left py-3 px-4 font-medium text-slate-700 dark:text-slate-300">Port</th>
+                            <th class="text-left py-3 px-4 font-medium text-slate-700 dark:text-slate-300">Status</th>
+                            <th class="text-left py-3 px-4 font-medium text-slate-700 dark:text-slate-300">Service</th>
+                            <th class="text-left py-3 px-4 font-medium text-slate-700 dark:text-slate-300">Protocol</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for result in scan_results %}
+                        <tr class="border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                            <td class="py-3 px-4 font-mono text-slate-900 dark:text-white">{{ result.port }}</td>
+                            <td class="py-3 px-4">
+                                {% if result.status == 'OPEN' %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
+                                        <i class="fas fa-circle text-green-500 mr-1 text-xs"></i>
+                                        OPEN
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300">
+                                        <i class="fas fa-circle text-red-500 mr-1 text-xs"></i>
+                                        {{ result.status }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-4 text-slate-700 dark:text-slate-300">{{ result.service }}</td>
+                            <td class="py-3 px-4 text-slate-600 dark:text-slate-400">{{ result.protocol }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-12">
+                <i class="fas fa-shield-alt text-slate-400 text-4xl mb-4"></i>
+                <p class="text-slate-600 dark:text-slate-400">No open ports found</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Footer -->
+        <footer class="mt-12 text-center text-sm text-slate-500 dark:text-slate-400">
+            <p>
+                <i class="fas fa-tag mr-1"></i>Version {{ app_version }} | 
+                <i class="fas fa-code mr-1"></i>Developed by <a href="https://github.com/Liosmar" target="_blank" class="text-primary-500 hover:text-primary-600 transition-colors">
+                    <i class="fab fa-github mr-1"></i>Liosmar
+                </a>
+            </p>
+        </footer>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center px-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 w-full max-w-sm text-center shadow-2xl">
+            <div class="scanning-pulse mx-auto mb-4">
+                <svg class="w-16 h-16 text-primary-500 mx-auto" viewBox="0 0 48 48" fill="none">
+                    <!-- Radar grid circles -->
+                    <circle cx="24" cy="24" r="8" stroke="currentColor" stroke-width="1" fill="none" opacity="0.2"/>
+                    <circle cx="24" cy="24" r="16" stroke="currentColor" stroke-width="1" fill="none" opacity="0.15"/>
+                    <circle cx="24" cy="24" r="22" stroke="currentColor" stroke-width="1" fill="none" opacity="0.1"/>
+                    
+                    <!-- Radar grid lines -->
+                    <line x1="24" y1="2" x2="24" y2="46" stroke="currentColor" stroke-width="1" opacity="0.1"/>
+                    <line x1="2" y1="24" x2="46" y2="24" stroke="currentColor" stroke-width="1" opacity="0.1"/>
+                    
+                    <!-- Rotating radar sweep -->
+                    <g class="logo-scan" style="transform-origin: 24px 24px;">
+                        <path d="M24 24 L24 2 A22 22 0 0 1 35.8 8.2 Z" fill="currentColor" opacity="0.3"/>
+                        <line x1="24" y1="24" x2="24" y2="4" stroke="currentColor" stroke-width="2" opacity="0.8"/>
+                    </g>
+                    
+                    <!-- Center radar source -->
+                    <circle cx="24" cy="24" r="2" fill="currentColor"/>
+                    
+                    <!-- Detection blips -->
+                    <circle cx="32" cy="16" r="1" fill="currentColor" opacity="0.6">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="18" cy="12" r="1" fill="currentColor" opacity="0.4">
+                        <animate attributeName="opacity" values="0.1;0.8;0.1" dur="3s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="36" cy="28" r="1" fill="currentColor" opacity="0.5">
+                        <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2.5s" repeatCount="indefinite"/>
+                    </circle>
+                </svg>
+            </div>
+            <h3 class="text-base sm:text-lg font-medium text-slate-900 dark:text-white mb-2">Scanning Network Ports</h3>
+            <p class="text-sm sm:text-base text-slate-600 dark:text-slate-400">Please wait while we analyze the target network...</p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/scanner.js') }}"></script>
+</body>
+</html>
