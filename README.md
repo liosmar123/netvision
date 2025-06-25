@@ -24,7 +24,7 @@ A powerful and elegant web-based network port scanner built with Python Flask. N
 
 ## Screenshots
 
-![Web Port Scanner Interface](https://raw.githubusercontent.com/liosmar123/netvision/refs/heads/main/netvision.png)
+![Web Port Scanner Interface](https://raw.githubusercontent.com/liosmar123/netvision/refs/heads/main/netvisionbv.png)
 
 ## 🚀 Quick Start
 
