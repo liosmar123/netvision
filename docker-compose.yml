@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  netvision:
+    image: liosmar/netvision:latest
+    container_name: netvision
+    ports:
+      - "9898:5000"
+    restart: unless-stopped
+    environment:
+      - SESSION_SECRET=${SESSION_SECRET:-change-this-secret-key-in-production}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "com.netvision.description=NetVision Network Port Scanner"
+      - "com.netvision.version=1.3"
