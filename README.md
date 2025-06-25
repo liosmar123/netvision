@@ -321,7 +321,7 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## 📊 Version History
 
-### Beta 1.2 (Latest)
+### Beta 1.3 (Latest)
 - ✨ New hexagonal network-themed logo and branding
 - 🖱️ Clickable logo with homepage navigation
 - 📱 Enhanced mobile responsiveness across all sections
