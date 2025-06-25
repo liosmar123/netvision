@@ -1,8 +1,8 @@
-# 🌐 NetVision - Network Port Scanner
+# 🌐 NetVision
 
 A powerful and elegant web-based network port scanner built with Python Flask. NetVision provides fast, reliable port scanning with a modern, responsive interface optimized for both desktop and mobile devices.
 
-![NetVision](https://img.shields.io/badge/NetVision-Beta%201.3-blue)
+![NetVision](https://img.shields.io/badge/NetVision-Beta%201.2-blue)
 ![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![Flask](https://img.shields.io/badge/flask-2.0+-green.svg)
 ![Docker](https://img.shields.io/badge/docker-supported-blue.svg)
@@ -20,8 +20,11 @@ A powerful and elegant web-based network port scanner built with Python Flask. N
 - **📋 Clipboard Integration** - Easy IP address pasting functionality with smart helper buttons
 - **🐳 Docker Ready** - Simple containerized deployment with multi-platform support
 - **🔒 Security Focused** - Safe and responsible network scanning practices
-- **🎯 Clickable Logo** - Interactive branding that returns to homepage
 - **📊 Dual Result Views** - Card layout for mobile, table view for desktop
+
+## Screenshots
+
+![Web Port Scanner Interface](https://raw.githubusercontent.com/liosmar123/netvision/refs/heads/main/netvision.png)
 
 ## 🚀 Quick Start
 
@@ -318,7 +321,7 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## 📊 Version History
 
-### Beta 1.3 (Latest)
+### Beta 1.2 (Latest)
 - ✨ New hexagonal network-themed logo and branding
 - 🖱️ Clickable logo with homepage navigation
 - 📱 Enhanced mobile responsiveness across all sections
